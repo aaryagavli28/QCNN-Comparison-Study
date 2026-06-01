@@ -1,0 +1,2 @@
+train_acc,train_loss,val_acc,val_loss,confusion_matrix,training_time,dataset,model
+0.921875,0.840627135214163,0.9208333333333333,0.765250826254487,"[[62, 1, 5], [2, 80, 1], [8, 2, 79]]",2220.779636144638,mnist_179_1200.csv,inception

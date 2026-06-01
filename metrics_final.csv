@@ -1,0 +1,5 @@
+dataset,model,val_acc,val_loss,train_acc,train_loss
+mnist_179,single_encoding,0.7958,0.5165,0.7302,0.5535
+mnist_179,multi_encoding,0.8333,0.5318,0.8469,0.3744
+mnist_179,multi_noisy,0.8292,0.4828,0.8604,0.3455
+mnist_179,inception,0.9208,0.7653,0.9219,0.8406
