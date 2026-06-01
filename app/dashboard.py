@@ -1,10 +1,12 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+import json
 
-# ----------------------------------
+# ==========================================
 # PAGE CONFIG
-# ----------------------------------
+# ==========================================
 
 st.set_page_config(
     page_title="QCNN Comparison Study",
@@ -12,28 +14,76 @@ st.set_page_config(
     layout="wide"
 )
 
-# ----------------------------------
+# ==========================================
 # LOAD DATA
-# ----------------------------------
+# ==========================================
 
 df = pd.read_csv("metrics_final.csv")
 
-# ----------------------------------
+try:
+    with open("confusion_matrices.json", "r") as f:
+        confusion_data = json.load(f)
+except:
+    confusion_data = {}
+
+# ==========================================
 # HEADER
-# ----------------------------------
+# ==========================================
 
 st.title("⚛️ Quantum CNN Comparison Study")
 
 st.markdown("""
-Comparative analysis of hybrid Quantum Convolutional Neural Networks (QCNNs)
-implemented using PennyLane and PyTorch on the MNIST-179 dataset.
+### Comparative Analysis of Hybrid Quantum Convolutional Neural Networks
+
+This dashboard presents a comparative study of multiple Quantum CNN
+architectures implemented using PennyLane and PyTorch on the MNIST-179 dataset.
 """)
 
 st.divider()
 
-# ----------------------------------
+# ==========================================
+# SIDEBAR
+# ==========================================
+
+st.sidebar.title("QCNN Dashboard")
+
+st.sidebar.markdown("""
+### Project Information
+
+**Dataset**
+- MNIST-179
+
+**Frameworks**
+- PennyLane
+- PyTorch
+- Streamlit
+
+**Models**
+- Single Encoding
+- Multi Encoding
+- Multi Noisy
+- Inception
+""")
+
+st.sidebar.divider()
+
+selected_model = st.sidebar.selectbox(
+    "Select Model",
+    ["All"] + list(df["model"].unique())
+)
+
+# ==========================================
+# FILTER
+# ==========================================
+
+if selected_model != "All":
+    display_df = df[df["model"] == selected_model]
+else:
+    display_df = df
+
+# ==========================================
 # KPI SECTION
-# ----------------------------------
+# ==========================================
 
 best_model = df.loc[df["val_acc"].idxmax()]
 
@@ -59,90 +109,69 @@ with col3:
 
 st.divider()
 
-# ----------------------------------
-# SIDEBAR
-# ----------------------------------
-
-st.sidebar.title("QCNN Dashboard")
-
-st.sidebar.info("""
-### Project Information
-
-Dataset:
-MNIST-179
-
-Framework:
-- PennyLane
-- PyTorch
-- Streamlit
-
-Models:
-- Single Encoding
-- Multi Encoding
-- Multi Noisy
-- Inception
-""")
-
-# ----------------------------------
+# ==========================================
 # TABS
-# ----------------------------------
+# ==========================================
 
-tab1, tab2, tab3, tab4 = st.tabs(
-    [
-        "📊 Results",
-        "⏱ Runtime",
-        "🧠 Findings",
-        "📚 References"
-    ]
-)
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    "📊 Results",
+    "⏱ Runtime",
+    "🔲 Confusion Matrix",
+    "🧠 Findings",
+    "⚙️ Methodology",
+    "📚 References"
+])
 
-# ==================================
+# ==========================================
 # RESULTS TAB
-# ==================================
+# ==========================================
 
 with tab1:
 
     st.subheader("Experiment Results")
 
     st.dataframe(
-        df,
+        display_df,
         use_container_width=True
     )
 
-    st.subheader("Validation Accuracy")
+    st.download_button(
+        label="⬇ Download Results CSV",
+        data=df.to_csv(index=False),
+        file_name="metrics_final.csv",
+        mime="text/csv"
+    )
+
+    st.subheader("Validation Accuracy Comparison")
 
     fig_acc = px.bar(
-        df,
+        display_df,
         x="model",
         y="val_acc",
         text="val_acc",
         color="val_acc",
-        title="Validation Accuracy Comparison"
+        title="Validation Accuracy"
     )
 
-    fig_acc.update_layout(
-        height=500
-    )
+    fig_acc.update_layout(height=500)
 
     st.plotly_chart(
         fig_acc,
         use_container_width=True
     )
 
-    st.subheader("Validation Loss")
+    st.subheader("Validation Loss Comparison")
 
     fig_loss = px.bar(
-        df,
+        display_df,
         x="model",
         y="val_loss",
         text="val_loss",
         color="val_loss",
-        title="Validation Loss Comparison"
+        title="Validation Loss"
     )
 
-    fig_loss.update_layout(
-        height=500
-    )
+    fig_loss.update_layout(height=500)
 
     st.plotly_chart(
         fig_loss,
@@ -168,32 +197,34 @@ with tab1:
         hide_index=True
     )
 
-# ==================================
+# ==========================================
 # RUNTIME TAB
-# ==================================
+# ==========================================
 
 with tab2:
 
-    runtime_df = pd.DataFrame(
-        {
-            "model": [
-                "single_encoding",
-                "multi_encoding",
-                "multi_noisy",
-                "inception"
-            ],
-            "runtime_minutes": [
-                65,
-                34,
-                230,
-                37
-            ]
-        }
-    )
+    runtime_df = pd.DataFrame({
+        "model": [
+            "single_encoding",
+            "multi_encoding",
+            "multi_noisy",
+            "inception"
+        ],
+        "runtime_minutes": [
+            65,
+            34,
+            230,
+            37
+        ],
+        "accuracy": [
+            0.7958,
+            0.8333,
+            0.8292,
+            0.9208
+        ]
+    })
 
-    st.subheader(
-        "Training Runtime Comparison"
-    )
+    st.subheader("Training Runtime Comparison")
 
     fig_runtime = px.bar(
         runtime_df,
@@ -203,62 +234,168 @@ with tab2:
         text="runtime_minutes"
     )
 
-    fig_runtime.update_layout(
-        height=500
-    )
+    fig_runtime.update_layout(height=500)
 
     st.plotly_chart(
         fig_runtime,
         use_container_width=True
     )
 
-# ==================================
-# FINDINGS TAB
-# ==================================
+    st.subheader("Accuracy vs Runtime")
+
+    fig_scatter = px.scatter(
+        runtime_df,
+        x="runtime_minutes",
+        y="accuracy",
+        size="accuracy",
+        color="model",
+        hover_name="model"
+    )
+
+    fig_scatter.update_layout(height=600)
+
+    st.plotly_chart(
+        fig_scatter,
+        use_container_width=True
+    )
+
+# ==========================================
+# CONFUSION MATRIX TAB
+# ==========================================
 
 with tab3:
 
-    st.subheader("Research Findings")
+    st.subheader("Confusion Matrix")
 
-    st.success("""
-    Inception achieved the highest validation accuracy
-    among all tested QCNN architectures.
-    """)
+    if confusion_data:
 
-    st.markdown("""
-    ### Key Observations
+        dataset_key = list(confusion_data.keys())[0]
 
-    - Inception achieved the best performance (92.08%)
-    - Multi Encoding achieved competitive performance
-      with significantly lower runtime
-    - Multi Noisy required the highest computational cost
-    - Quantum circuit simulation remains expensive
-    - Hybrid quantum-classical architectures show
-      promising classification performance
-    """)
+        model_options = list(
+            confusion_data[dataset_key].keys()
+        )
 
-# ==================================
-# REFERENCES TAB
-# ==================================
+        selected_cm_model = st.selectbox(
+            "Select Model",
+            model_options
+        )
+
+        cm = confusion_data[
+            dataset_key
+        ][selected_cm_model]
+
+        fig_cm = go.Figure(
+            data=go.Heatmap(
+                z=cm,
+                text=cm,
+                texttemplate="%{text}",
+                colorscale="Blues"
+            )
+        )
+
+        fig_cm.update_layout(
+            title=f"Confusion Matrix - {selected_cm_model}",
+            xaxis_title="Predicted",
+            yaxis_title="Actual",
+            height=600
+        )
+
+        st.plotly_chart(
+            fig_cm,
+            use_container_width=True
+        )
+
+    else:
+
+        st.warning(
+            "No confusion matrix file found."
+        )
+
+# ==========================================
+# FINDINGS TAB
+# ==========================================
 
 with tab4:
 
-    st.subheader("Research Papers")
+    st.success("""
+    Best Performing Model:
+    Inception QCNN
+    (Validation Accuracy = 92.08%)
+    """)
 
     st.markdown("""
-    ### Quantum Convolutional Neural Networks
+    ## Key Findings
 
+    - Inception achieved the highest validation accuracy.
+    - Multi Encoding achieved strong performance with low runtime.
+    - Multi Noisy produced competitive accuracy but required substantial computational resources.
+    - Single Encoding provided the simplest quantum architecture.
+    - Quantum circuit simulation remains computationally expensive.
+    - Hybrid quantum-classical architectures show strong potential for image classification tasks.
+    """)
+
+# ==========================================
+# METHODOLOGY TAB
+# ==========================================
+
+with tab5:
+
+    st.markdown("""
+    ## Experimental Methodology
+
+    Dataset
+    ↓
+
+    MNIST-179
+
+    ↓
+
+    Train / Validation Split
+
+    ↓
+
+    Quantum Feature Encoding
+
+    ↓
+
+    QCNN Architecture
+
+    ↓
+
+    Training using PennyLane + PyTorch
+
+    ↓
+
+    Performance Evaluation
+
+    ↓
+
+    Comparative Analysis
+    """)
+
+# ==========================================
+# REFERENCES TAB
+# ==========================================
+
+with tab6:
+
+    st.markdown("""
+    ## Research References
+
+    ### Quantum Convolutional Neural Networks
     Cong, Choi, Lukin (2019)
 
     ### Quanvolutional Neural Networks
-
     Henderson et al. (2019)
 
-    ### Hybrid Quantum-Classical CNN Models
-
-    Fan et al.
+    ### Hybrid Quantum-Classical Convolutional Neural Networks
 
     ### Quantum CNNs for Image Classification
 
-    Lü et al.
+    ### Frameworks Used
+
+    - PennyLane
+    - PyTorch
+    - Streamlit
+    - Plotly
     """)
