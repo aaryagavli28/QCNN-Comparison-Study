@@ -379,23 +379,42 @@ with tab5:
 
 with tab6:
 
-    st.markdown("""
-    ## Research References
+    st.header("📚 Research References")
 
-    ### Quantum Convolutional Neural Networks
-    Cong, Choi, Lukin (2019)
+    references = [
+        "[1] H. P. Kanna, P. Goriparthi, K. S. Rajasekhar, and A. Kolusu, 'Performance Evaluation of Quantum Encoding Techniques in QCNN for Bone Marrow Cell Classification,' in Proc. Int. Conf. Computing, Communication, Control and Cyber-Physical Systems (I5CPS), IEEE, 2026.",
 
-    ### Quanvolutional Neural Networks
-    Henderson et al. (2019)
+        "[2] M. E. Sahin, E. Altamura, O. Wallis, S. P. Wood, A. Dekusar, D. A. Millar, T. Imamichi, A. Matsuo, and S. Mensa, 'Qiskit Machine Learning: An Open-Source Library for Quantum Machine Learning Tasks at Scale on Quantum Hardware and Classical Simulators,' arXiv preprint arXiv:2505.17756, 2025.",
 
-    ### Hybrid Quantum-Classical Convolutional Neural Networks
+        "[3] K. Zaman, A. Marchisio, M. A. Hanif, and M. Shafique, 'A Survey on Quantum Machine Learning: Basics, Current Trends, Challenges, Opportunities, and the Road Ahead,' arXiv preprint arXiv:2310.10315, 2025.",
 
-    ### Quantum CNNs for Image Classification
+        "[4] F. Fan, Y. Shi, T. Guggenmos, and X. X. Zhu, 'Hybrid Quantum-Classical Convolutional Neural Network Model for Image Classification,' IEEE Transactions on Neural Networks and Learning Systems, vol. 35, no. 12, pp. 18145–18159, Dec. 2024.",
 
-    ### Frameworks Used
+        "[5] P. Easom-McCaldin, A. Bouridane, A. Belatreche, R. Jiang, and S. Al-Maadeed, 'Efficient Quantum Image Classification Using Single-Qubit Encoding,' IEEE Transactions on Neural Networks and Learning Systems, vol. 35, no. 2, pp. 1472–1486, Feb. 2024.",
 
-    - PennyLane
-    - PyTorch
-    - Streamlit
-    - Plotly
-    """)
+        "[6] Y. Song, J. Li, Y. Wu, S. Qin, Q. Wen, and F. Gao, 'A Resource-Efficient Quantum Convolutional Neural Network,' Frontiers in Physics, vol. 12, Art. no. 1362690, 2024.",
+
+        "[7] K. Zaman, T. Ahmed, M. A. Hanif, A. Marchisio, and M. Shafique, 'A Comparative Analysis of Hybrid-Quantum Classical Neural Networks,' in Proc. 3rd Int. Conf. Emergent Quantum Technologies (ICEQT), 2024.",
+
+        "[8] E. H. Houssein, Z. Abohashima, M. Elhoseny, and W. M. Mohamed, 'Hybrid Quantum-Classical Convolutional Neural Network Model for COVID-19 Prediction Using Chest X-Ray Images,' Journal of Computational Design and Engineering, vol. 9, no. 2, pp. 343–363, 2022.",
+
+        "[9] V. Bergholm, J. Izaac, M. Schuld, C. Gogolin, S. Ahmed, V. Ajith, N. Killoran, et al., 'PennyLane: Automatic Differentiation of Hybrid Quantum-Classical Computations,' arXiv preprint arXiv:1811.04968, 2022.",
+
+        "[10] M. Broughton, G. Verdon, T. McCourt, A. J. Martinez, J. H. Yoo, S. V. Isakov, P. Massey, et al., 'TensorFlow Quantum: A Software Framework for Quantum Machine Learning,' arXiv preprint arXiv:2003.02989, 2021.",
+
+        "[11] H. Y. Huang, R. Kueng, and J. Preskill, 'Information-Theoretic Bounds on Quantum Advantage in Machine Learning,' Physical Review Letters, vol. 126, no. 19, Art. no. 190505, 2021.",
+
+        "[12] M. Henderson, S. Shakya, S. Pradhan, and T. Cook, 'Quanvolutional Neural Networks: Powering Image Recognition with Quantum Circuits,' Quantum Machine Intelligence, vol. 2, no. 2, pp. 1–9, 2020.",
+
+        "[13] S. Oh, J. Choi, and J. Kim, 'A Tutorial on Quantum Convolutional Neural Networks (QCNN),' arXiv preprint arXiv:2009.09423, 2020."
+    ]
+
+    st.info(
+        "The following references were used during the literature review and implementation of the QCNN comparative analysis study."
+    )
+
+    for ref in references:
+        st.markdown(f"**{ref}**")
+        st.divider()
+
+    st.success("Total References Used: 13")
