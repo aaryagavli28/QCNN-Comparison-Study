@@ -26,3 +26,6 @@
 - PyTorch
 - Scikit-Learn
 - Google Colab
+
+## Deployed Dashboard
+Link - https://qcnn-comparison-study-f3o6zkftqi5vuwv7jfrgz2.streamlit.app/
